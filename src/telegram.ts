@@ -66,11 +66,20 @@ export async function restrict_chat_member(token: string, chat_id: string | numb
 	});
 }
 
-export async function send_message(token: string, chat_id: string | number, text: string, parsing: string) {
+export async function send_message(
+	token: string,
+	chat_id: string | number,
+	text: string,
+	parsing: string,
+	reply_to_message_id?: number,
+	allow_sending_without_reply = true,
+) {
 	return await call_telegram_api(token, "sendMessage", {
 		chat_id,
 		text,
 		parse_mode: parsing,
+		reply_to_message_id,
+		allow_sending_without_reply,
 	});
 }
 
