@@ -41,11 +41,11 @@ const EventHandler = {
 	// The scheduled handler is invoked at the interval set in our wrangler.toml's
 	// [[triggers]] configuration.
 	async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
-		switch (event.cron) {
-			case "30 7 * * *":
+		// switch (event.cron) {
+		// 	case "30 7 * * *":
 				await handle_profit(env);
-				break;
-		}
+		// 		break;
+		// }
 	},
 };
 
