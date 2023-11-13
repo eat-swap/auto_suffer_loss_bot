@@ -30,7 +30,7 @@ export async function get_quote(market: Market, stock_id: string): Promise<KLine
 	const params = new URLSearchParams();
 	params.set("klt", "101");
 	params.set("fqt", "1");
-	params.set("lmt", "45"); // limit
+	params.set("lmt", "5"); // limit
 	params.set("end", "20500000");
 	params.set("iscca", "1");
 	params.set("fields1", "f1,f2,f3,f4,f5,f6,f7,f8");

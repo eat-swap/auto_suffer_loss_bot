@@ -7,6 +7,7 @@ import {send_message} from "./telegram";
 
 export async function handle_profit(env: Env) {
 	const today = dayjs();
+	console.log(`Handling profit, time now ${today.format()}`);
 	const profit = await Promise.all(
 		POSITION.map((s): Promise<[Stock, KLine[]]> =>
 			new Promise(async () => [s, await get_quote(s.market, s.id)]),
@@ -18,15 +19,17 @@ export async function handle_profit(env: Env) {
 					a.date.isBefore(b.date) ? 1 : a.date.isAfter(b.date) ? -1 : 0,
 				);
 				const [d1, d2] = kls;
-				return s.position * (d1.close - d2.close) + sum;
+				return d1.date.isSame(today, "d") ? s.position * (d1.close - d2.close) + sum : sum;
 			},
 			0,
 		),
 	);
 
 	const formatted = Math.abs(profit).toFixed(2);
+	console.log(`Total profit: ${profit.toFixed(2)}`);
 
 	const reply_to = Number(await env.investment.get(`${env.CHANNEL_ID}:last`) ?? "-1");
+	console.log(`Replying to: ${reply_to}`);
 
 	const send_msg_resp = await send_message(
 		env.API_KEY,
@@ -40,6 +43,8 @@ export async function handle_profit(env: Env) {
 	);
 	const resp_json: any = await send_msg_resp.json();
 	const new_msg_id = resp_json.message_id;
+	console.log(`New message id: ${new_msg_id}`);
 
 	await env.investment.put(`${env.CHANNEL_ID}:last`, `${new_msg_id}`);
+	console.log("Finished processing profit.");
 }
