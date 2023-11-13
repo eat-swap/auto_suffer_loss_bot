@@ -11,6 +11,7 @@
  *
  * Learn more at https://developers.cloudflare.com/workers/
  */
+import {handle_profit} from "./profit";
 
 export interface Env {
 	// Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
@@ -42,7 +43,8 @@ const EventHandler = {
 	async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
 		switch (event.cron) {
 			case "30 7 * * *":
-				;
+				await handle_profit(env);
+				break;
 		}
 	},
 };

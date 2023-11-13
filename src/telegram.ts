@@ -70,7 +70,7 @@ export async function send_message(
 	token: string,
 	chat_id: string | number,
 	text: string,
-	parsing: string,
+	parsing?: string,
 	reply_to_message_id?: number,
 	allow_sending_without_reply = true,
 ) {
