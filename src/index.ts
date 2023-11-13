@@ -31,6 +31,9 @@ export interface Env {
 	// Example binding to a D1 Database. Learn more at https://developers.cloudflare.com/workers/platform/bindings/#d1-database-bindings
 	// DB: D1Database
 	investment: KVNamespace;
+
+	API_KEY: string;
+	CHANNEL_ID: string;
 }
 
 const EventHandler = {
