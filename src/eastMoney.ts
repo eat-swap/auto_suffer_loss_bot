@@ -27,6 +27,7 @@ export interface KLine {
 }
 
 export async function get_quote(market: Market, stock_id: string): Promise<KLine[]> {
+	console.log("get_quote() entered.");
 	const params = new URLSearchParams();
 	params.set("klt", "101");
 	params.set("fqt", "1");
@@ -39,21 +40,29 @@ export async function get_quote(market: Market, stock_id: string): Promise<KLine
 
 	params.set("secid", `${Number(market)}.${stock_id}`);
 
+	console.log("Finished setting params, making request");
+
 	const resp = await fetch(`https://push2his.eastmoney.com/api/qt/stock/kline/get?${params}`, {
 		headers: {
 			Origin: "https://waptest.eastmoney.com",
 			Referer: "https://waptest.eastmoney.com",
 		},
 	});
+
+	console.log("Request OK, getting text");
 	const text = await resp.text();
+
+	console.log("Parsing into json");
 	const [json, ok] = parse_json(text);
 	if (!ok || !json.data) {
 		return [];
 	}
 
+	console.log("Deserializing K Lines");
 	const quote = json.data as QuoteResponse;
 	return quote.klines.map(it => {
 		const sp = it.split(",");
+		console.log("One K-Line OK");
 		return {
 			date: dayjs(sp[0]),
 			open: Number(sp[1]),

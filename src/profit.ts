@@ -36,7 +36,7 @@ export async function handle_profit(env: Env) {
 		env.CHANNEL_ID,
 		Math.abs(profit) < 1e-3 ?
 			"今日在上海证券交易所未录得损益" :
-		`今日在上海证券交易所${profit > 0 ? "获得收益" : "蒙受亏损"} ${formatted} 人民币元`,
+			`今日在上海证券交易所${profit > 0 ? "获得收益" : "蒙受亏损"} ${formatted} 人民币元`,
 		undefined,
 		reply_to,
 		true,
