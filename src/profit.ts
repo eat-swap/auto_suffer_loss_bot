@@ -22,7 +22,9 @@ export async function handle_profit(env: Env) {
 		profit += p;
 	}
 
-	const formatted = Math.abs(profit).toFixed(2);
+	const formatted = Math.abs(profit).toFixed(
+		Math.abs(Math.round(profit) - profit) < 5e-3 ? 0 : 2
+	);
 	// console.log(`Total profit: ${profit.toFixed(2)}`);
 
 	const reply_to = Number(await env.investment.get(`${env.CHANNEL_ID}:last`) ?? "-1");
