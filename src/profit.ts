@@ -29,6 +29,10 @@ export async function handle_profit(env: Env) {
 
 	const reply_to = Number(await env.investment.get(`${env.CHANNEL_ID}:last`) ?? "-1");
 	// console.log(`Replying to: ${reply_to}`);
+	const last_date = await env.investment.get(`${env.CHANNEL_ID}:date`);
+	if (last_date && dayjs(last_date).isSame(today, "d")) {
+		return;
+	}
 
 	const send_msg_resp = await send_message(
 		env.API_KEY,
@@ -46,5 +50,6 @@ export async function handle_profit(env: Env) {
 	// console.log(`New message id: ${new_msg_id}`);
 
 	await env.investment.put(`${env.CHANNEL_ID}:last`, `${new_msg_id}`);
+	await env.investment.put(`${env.CHANNEL_ID}:date`, `${dayjs().format("YYYY-MM-DD HH:mm:ss")}`);
 	// console.log("Finished processing profit.");
 }
