@@ -42,7 +42,13 @@ const EventHandler = {
 	// [[triggers]] configuration.
 	async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
 		// console.log("Entered scheduled entrypoint.");
-		await handle_profit(env);
+		switch (event.cron) {
+			case "30 7-10 * * 2-6":
+				await handle_profit(env);
+				break;
+			default:
+				console.log(`Unknown cron ${event.cron}`);
+		}
 	},
 };
 
