@@ -6,6 +6,20 @@ export enum Market {
 	SHANGHAI,
 }
 
+export const MARKET_LIST: Readonly<{
+	id: Market;
+	name: string;
+}[]> = [
+	{
+		id: Market.SHENZHEN,
+		name: "深圳证券交易所",
+	},
+	{
+		id: Market.SHANGHAI,
+		name: "上海证券交易所",
+	},
+];
+
 export interface QuoteResponse {
 	code: string;
 	market: Market;

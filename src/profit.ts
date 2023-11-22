@@ -1,13 +1,16 @@
 import {Env} from "./index";
 import {POSITION} from "./config";
-import {get_quote, KLine, Market} from "./eastMoney";
+import {get_quote, Market, MARKET_LIST} from "./eastMoney";
 import dayjs from "dayjs";
 import {send_message} from "./telegram";
 
 export async function handle_profit(env: Env) {
 	const today = dayjs();
 	// console.log(`Handling profit, time now ${today.format()}`);
-	let profit = 0;
+	const profit: Record<Market, number> = MARKET_LIST.reduce((obj, cur) => {
+		obj[cur.id] = 0;
+		return obj;
+	}, {} as Record<Market, number>)
 	for (const s of POSITION) {
 		// console.log(`Sending request for ${s.id}`);
 		const quote = await get_quote(s.market, s.id);
@@ -19,13 +22,16 @@ export async function handle_profit(env: Env) {
 		const [d1, d2] = quote;
 		const p = d1.date.isSame(today, "d") ? s.position * (d1.close - d2.close) : 0;
 		// console.log(`[${d1.date.format("YYYY-MM-DD")}] [${Market[s.market]}] [${s.id}] Profit: ${p.toFixed(2)}`)
-		profit += p;
+		profit[s.market] += p;
 	}
 
-	const formatted = Math.abs(profit).toFixed(
-		Math.abs(Math.round(profit) - profit) < 5e-3 ? 0 : 2
-	);
-	// console.log(`Total profit: ${profit.toFixed(2)}`);
+	const formatter = (p: number) => (`${p > 0 ? "获得收益" : "蒙受亏损"} ${
+		Math.abs(p).toFixed(Math.abs(Math.round(p) - p) < 5e-3 ? 0 : 2)
+	} 人民币元`);
+
+	const formatted_strings = MARKET_LIST.map(market => (
+		profit[market.id] !== 0 ? `在${market.name}${formatter(profit[market.id])}` : ""
+	)).filter(it => it.length > 0);
 
 	const reply_to = Number(await env.investment.get(`${env.CHANNEL_ID}:last`) ?? "-1");
 	// console.log(`Replying to: ${reply_to}`);
@@ -37,9 +43,9 @@ export async function handle_profit(env: Env) {
 	const send_msg_resp = await send_message(
 		env.API_KEY,
 		env.CHANNEL_ID,
-		Math.abs(profit) < 1e-3 ?
-			"今日在上海证券交易所未录得损益" :
-			`今日在上海证券交易所${profit > 0 ? "获得收益" : "蒙受亏损"} ${formatted} 人民币元`,
+		formatted_strings.length <= 0 ?
+			"今日未录得损益" :
+			`今日${formatted_strings.join("，")}`,
 		undefined,
 		reply_to,
 		true,
