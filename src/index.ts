@@ -43,7 +43,7 @@ const EventHandler = {
 	async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
 		// console.log("Entered scheduled entrypoint.");
 		switch (event.cron) {
-			case "30 7-10 * * 2-6":
+			case "15 7-9 * * 2-6":
 				await handle_profit(env);
 				break;
 			default:
